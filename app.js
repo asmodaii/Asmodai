@@ -2,7 +2,7 @@
 /* Coffre mobile — tout reste sur l'appareil (IndexedDB), chiffré en AES-GCM 256.
    Clé du coffre aléatoire, emballée deux fois : par le mot de passe et par le code de secours (PBKDF2-SHA256). */
 
-const VERSION = 1;
+const VERSION = 2;
 const ITER = 310000;
 const TAILLE_MAX = 700 * 1024 * 1024;
 const $ = (s, r = document) => r.querySelector(s);
@@ -418,10 +418,17 @@ const zoom = { s: 1, x: 0, y: 0 };
 function appliquerZoom() {
   const img = $('#v-scene img'); if (!img) return;
   img.style.transform = zoom.s === 1 ? '' : `translate(${zoom.x}px,${zoom.y}px) scale(${zoom.s})`;
+  img.draggable = zoom.s === 1; // zoomé : l'appui long sert à déplacer, pas à sortir l'image
 }
 function ouvrirVisionneuse(i) {
   $('#visionneuse').hidden = false; $('#visionneuse').classList.remove('nu');
   afficher(i);
+  try {
+    if (!localStorage.getItem('astuce-glisser')) {
+      localStorage.setItem('astuce-glisser', '1');
+      toast('Astuce : maintiens l’image puis glisse-la vers une autre app (Messages…) pour l’y déposer.', 6000);
+    }
+  } catch {}
 }
 function fermerVisionneuse(silencieux) {
   const v = $('#visionneuse'); if (v.hidden) return;
@@ -444,7 +451,7 @@ async function afficher(i) {
       const v = document.createElement('video'); v.src = o.url; v.controls = true; v.playsInline = true; v.loop = true;
       sc.append(v);
     } else {
-      const img = document.createElement('img'); img.src = o.url; img.draggable = false; img.alt = '';
+      const img = document.createElement('img'); img.src = o.url; img.draggable = true; img.alt = ''; img.className = 'sortable';
       img.onload = () => { const r = img.getBoundingClientRect(); img.dataset.l = r.width; img.dataset.h = r.height; };
       sc.append(img);
     }
@@ -472,7 +479,6 @@ $('#v-info-b').onclick = () => { $('#v-info').hidden = !$('#v-info').hidden; };
   let debut = null, pince = null, dernierTap = 0, tapT = null, bouge = false;
   sc.addEventListener('pointerdown', ev => {
     if (ev.target.tagName === 'VIDEO') return;
-    sc.setPointerCapture?.(ev.pointerId);
     pts.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
     bouge = false;
     if (pts.size === 1) debut = { x: ev.clientX, y: ev.clientY, zx: zoom.x, zy: zoom.y, t: Date.now() };
@@ -762,6 +768,8 @@ $('#b-retour').onclick = () => allerA(dossierPar(etat.dossier)?.parent ?? null);
 $('#recherche').oninput = ev => { etat.recherche = ev.target.value; rendre(); };
 $('#b-coller').onclick = () => coller();
 $('#b-importer').onclick = () => $('#f-importer').click();
+$('#b-photo').onclick = () => $('#f-photo').click();
+$('#f-photo').onchange = async ev => { const f = [...ev.target.files]; ev.target.value = ''; await ajouterFichiers(f); };
 $('#f-importer').onchange = async ev => { const f = [...ev.target.files]; ev.target.value = ''; await ajouterFichiers(f); };
 $('#b-dossier').onclick = async () => {
   const nom = await demanderTexte(etat.dossier ? 'Nouveau sous-dossier' : 'Nouveau dossier');

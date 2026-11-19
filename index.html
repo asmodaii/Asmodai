@@ -13,7 +13,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icone-180.png">
 <link rel="icon" href="icone-180.png">
-<link rel="stylesheet" href="style.css?v=1">
+<link rel="stylesheet" href="style.css?v=2">
 <title>Coffre</title>
 </head>
 <body>
@@ -91,6 +91,7 @@
   <nav id="bas">
     <div id="bas-normal" class="barre">
       <button id="b-coller"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4h6v3H9z"/></svg>Coller</button>
+      <button id="b-photo"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo</button>
       <button id="b-importer"><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Importer</button>
       <button id="b-dossier"><svg viewBox="0 0 24 24"><path d="M3 7h6l2 2h10v10H3z"/><path d="M12 12v5M9.5 14.5h5"/></svg>Dossier</button>
       <button id="b-choisir"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>Choisir</button>
@@ -105,6 +106,7 @@
     </div>
   </nav>
   <input id="f-importer" type="file" accept="image/*,video/*" multiple hidden>
+  <input id="f-photo" type="file" accept="image/*,video/*" capture="environment" hidden>
 </section>
 
 <!-- Visionneuse -->
@@ -220,6 +222,6 @@
 <div id="toast" hidden></div>
 <div id="depot" hidden>Dépose pour ranger dans le coffre</div>
 
-<script src="app.js?v=1"></script>
+<script src="app.js?v=2"></script>
 </body>
 </html>
