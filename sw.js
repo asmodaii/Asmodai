@@ -1,6 +1,6 @@
 // Garde l'app en cache pour qu'elle marche sans Internet. Les images ne passent jamais ici.
-const V = 'coffre-v2';
-const FICHIERS = ['./', 'index.html', 'app.js?v=2', 'style.css?v=2', 'manifest.webmanifest', 'icone-180.png', 'icone-512.png'];
+const V = 'coffre-v3';
+const FICHIERS = ['./', 'index.html', 'app.js?v=3', 'style.css?v=3', 'manifest.webmanifest', 'icone-180.png', 'icone-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(V).then(c => c.addAll(FICHIERS))); self.skipWaiting(); });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(k => Promise.all(k.filter(x => x !== V).map(x => caches.delete(x)))).then(() => self.clients.claim()));

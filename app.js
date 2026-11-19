@@ -2,7 +2,7 @@
 /* Coffre mobile — tout reste sur l'appareil (IndexedDB), chiffré en AES-GCM 256.
    Clé du coffre aléatoire, emballée deux fois : par le mot de passe et par le code de secours (PBKDF2-SHA256). */
 
-const VERSION = 2;
+const VERSION = 3;
 const ITER = 310000;
 const TAILLE_MAX = 700 * 1024 * 1024;
 const $ = (s, r = document) => r.querySelector(s);
@@ -770,7 +770,15 @@ $('#b-coller').onclick = () => coller();
 $('#b-importer').onclick = () => $('#f-importer').click();
 $('#b-photo').onclick = () => $('#f-photo').click();
 $('#f-photo').onchange = async ev => { const f = [...ev.target.files]; ev.target.value = ''; await ajouterFichiers(f); };
-$('#f-importer').onchange = async ev => { const f = [...ev.target.files]; ev.target.value = ''; await ajouterFichiers(f); };
+$('#f-importer').onchange = async ev => {
+  const f = [...ev.target.files]; ev.target.value = '';
+  const n = await ajouterFichiers(f);
+  if (!n || !cle) return;
+  // Une app web ne peut pas effacer les photos de la galerie : on rappelle de le faire, avec un raccourci vers Photos
+  if (await confirmer(`${n > 1 ? n + ' images sont' : 'L’image est'} dans le coffre, mais ${n > 1 ? 'les originaux sont' : 'l’original est'} encore dans ta galerie. Supprime-${n > 1 ? 'les' : 'le'} dans Photos, puis vide l’album « Supprimés récemment ».`, 'Ouvrir Photos')) {
+    location.href = 'photos-redirect://';
+  }
+};
 $('#b-dossier').onclick = async () => {
   const nom = await demanderTexte(etat.dossier ? 'Nouveau sous-dossier' : 'Nouveau dossier');
   if (!nom) return;
