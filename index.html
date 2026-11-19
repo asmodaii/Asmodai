@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Coffre">
+<meta name="theme-color" content="#0b0b0d">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icone-180.png">
+<link rel="icon" href="icone-180.png">
+<link rel="stylesheet" href="style.css?v=1">
+<title>Coffre</title>
+</head>
+<body>
+
+<!-- Safari (pas encore installé) -->
+<section id="e-installer" class="ecran centre" hidden>
+  <div class="logo"></div>
+  <h1>Installer le coffre</h1>
+  <ol class="etapes">
+    <li>Touche le bouton <b>Partager</b> de Safari (le carré avec une flèche).</li>
+    <li>Choisis <b>Sur l’écran d’accueil</b>. Tu peux changer le nom.</li>
+    <li>Ouvre le coffre depuis sa nouvelle icône.</li>
+  </ol>
+  <p class="note">Important : le coffre ouvert dans Safari et celui de l’icône sont deux coffres séparés. Crée-le seulement depuis l’icône.</p>
+  <button id="b-forcer" class="lien">Continuer dans Safari quand même</button>
+</section>
+
+<!-- Création -->
+<section id="e-creer" class="ecran centre" hidden>
+  <div class="logo"></div>
+  <h1>Nouveau coffre</h1>
+  <form id="f-creer" class="formulaire" autocomplete="off">
+    <input id="c-mdp" type="password" placeholder="Mot de passe (6 caractères min.)" autocomplete="new-password" required minlength="6">
+    <input id="c-mdp2" type="password" placeholder="Confirmer le mot de passe" autocomplete="new-password" required>
+    <p class="erreur" id="c-erreur"></p>
+    <button class="principal" type="submit">Créer le coffre</button>
+  </form>
+  <p class="note">Tes images restent sur ce téléphone, chiffrées. Sans le mot de passe ni le code de secours, personne ne peut les ouvrir — pas même toi.</p>
+  <button id="b-restaurer" class="lien">Restaurer une sauvegarde</button>
+  <input id="f-restaurer" type="file" hidden>
+</section>
+
+<!-- Code de secours -->
+<section id="e-secours" class="ecran centre" hidden>
+  <h1>Code de secours</h1>
+  <p>Il ouvre le coffre si tu oublies ton mot de passe. Note-le ailleurs que sur ce téléphone. Il ne sera plus jamais affiché.</p>
+  <div id="s-code" class="code"></div>
+  <button id="s-copier" class="secondaire">Copier le code</button>
+  <label class="case"><input id="s-ok" type="checkbox"> Je l’ai noté en lieu sûr</label>
+  <button id="s-continuer" class="principal" disabled>Ouvrir le coffre</button>
+</section>
+
+<!-- Ouverture -->
+<section id="e-ouvrir" class="ecran centre" hidden>
+  <div class="logo"></div>
+  <form id="f-ouvrir" class="formulaire" autocomplete="off">
+    <input id="o-mdp" type="password" placeholder="Mot de passe" autocomplete="current-password" required>
+    <p class="erreur" id="o-erreur"></p>
+    <button class="principal" type="submit">Ouvrir</button>
+  </form>
+  <button id="b-secours" class="lien">Mot de passe oublié ? Utiliser le code de secours</button>
+</section>
+
+<!-- Coffre -->
+<section id="e-coffre" class="ecran" hidden>
+  <header id="haut">
+    <div class="rangee">
+      <button id="b-retour" class="icone" aria-label="Retour" hidden>‹</button>
+      <nav id="chemin"></nav>
+      <button id="b-menu-dossier" class="icone" aria-label="Dossier" hidden>•••</button>
+      <button id="b-verrou" class="icone" aria-label="Verrouiller">
+        <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+      </button>
+    </div>
+    <input id="recherche" type="search" placeholder="Rechercher (tags, dossiers)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  </header>
+  <main id="contenu">
+    <div id="dossiers" class="dossiers"></div>
+    <div id="grille" class="grille"></div>
+    <div id="vide" class="vide" hidden>
+      <p>Rien ici pour l’instant.</p>
+      <p class="note">Copie une image n’importe où (appui long → Copier), puis touche <b>Coller</b>.<br>Ou glisse-la directement ici.</p>
+    </div>
+  </main>
+  <nav id="bas">
+    <div id="bas-normal" class="barre">
+      <button id="b-coller"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4h6v3H9z"/></svg>Coller</button>
+      <button id="b-importer"><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Importer</button>
+      <button id="b-dossier"><svg viewBox="0 0 24 24"><path d="M3 7h6l2 2h10v10H3z"/><path d="M12 12v5M9.5 14.5h5"/></svg>Dossier</button>
+      <button id="b-choisir"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg>Choisir</button>
+      <button id="b-reglages"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>Réglages</button>
+    </div>
+    <div id="bas-selection" class="barre" hidden>
+      <button id="s-tout"><b id="s-nombre">0</b>Tout</button>
+      <button id="s-ranger">Ranger</button>
+      <button id="s-partager">Partager</button>
+      <button id="s-supprimer" class="danger">Supprimer</button>
+      <button id="s-fin">Fini</button>
+    </div>
+  </nav>
+  <input id="f-importer" type="file" accept="image/*,video/*" multiple hidden>
+</section>
+
+<!-- Visionneuse -->
+<div id="visionneuse" hidden>
+  <div id="v-scene"></div>
+  <div id="v-haut">
+    <button id="v-fermer">Fermer</button>
+    <span id="v-pos"></span>
+    <button id="v-info-b">Infos</button>
+  </div>
+  <div id="v-info" hidden></div>
+  <div id="v-bas">
+    <button data-a="copier">Copier</button>
+    <button data-a="partager">Partager</button>
+    <button data-a="ranger">Ranger</button>
+    <button data-a="tags">Tags</button>
+    <button data-a="supprimer" class="danger">Supprimer</button>
+  </div>
+</div>
+
+<!-- Dialogues -->
+<dialog id="d-texte">
+  <form method="dialog">
+    <h2 id="dt-titre"></h2>
+    <input id="dt-valeur" autocomplete="off">
+    <div class="actions"><button value="non" class="secondaire">Annuler</button><button value="oui" class="principal">OK</button></div>
+  </form>
+</dialog>
+
+<dialog id="d-confirmer">
+  <form method="dialog">
+    <p id="dc-texte"></p>
+    <div class="actions"><button value="non" class="secondaire">Annuler</button><button value="oui" id="dc-oui" class="principal">OK</button></div>
+  </form>
+</dialog>
+
+<dialog id="d-actions">
+  <form method="dialog">
+    <h2 id="da-titre"></h2>
+    <div id="da-liste" class="liste"></div>
+    <div class="actions"><button value="" class="secondaire">Annuler</button></div>
+  </form>
+</dialog>
+
+<dialog id="d-dossiers">
+  <form method="dialog">
+    <h2 id="dd-titre">Ranger dans…</h2>
+    <div id="dd-liste" class="liste"></div>
+    <div class="actions"><button type="button" id="dd-nouveau" class="secondaire">+ Nouveau dossier</button><button value="" class="secondaire">Annuler</button></div>
+  </form>
+</dialog>
+
+<dialog id="d-tags">
+  <form method="dialog">
+    <h2>Tags</h2>
+    <input id="dg-valeur" placeholder="Ajouter un tag puis Entrée" autocomplete="off" autocapitalize="off">
+    <div id="dg-liste" class="puces"></div>
+    <div class="actions"><button value="non" class="secondaire">Annuler</button><button value="oui" class="principal">Enregistrer</button></div>
+  </form>
+</dialog>
+
+<dialog id="d-coller">
+  <form method="dialog">
+    <h2>Coller</h2>
+    <p class="note">Appuie longuement dans le cadre, puis choisis <b>Coller</b>.</p>
+    <div id="zone-coller" contenteditable="true" inputmode="none"></div>
+    <div class="actions"><button value="" class="secondaire">Fermer</button></div>
+  </form>
+</dialog>
+
+<dialog id="d-mdp">
+  <form id="f-mdp" method="dialog">
+    <h2 id="dm-titre">Nouveau mot de passe</h2>
+    <input id="dm-1" type="password" placeholder="Nouveau mot de passe" autocomplete="new-password" minlength="6">
+    <input id="dm-2" type="password" placeholder="Confirmer" autocomplete="new-password">
+    <p class="erreur" id="dm-erreur"></p>
+    <div class="actions"><button value="non" id="dm-annuler" class="secondaire">Annuler</button><button value="oui" class="principal">Enregistrer</button></div>
+  </form>
+</dialog>
+
+<dialog id="d-reglages">
+  <form method="dialog">
+    <h2>Réglages</h2>
+    <label class="champ">Verrouiller quand je quitte l’app
+      <select id="r-verrou">
+        <option value="0">Tout de suite</option>
+        <option value="30">Après 30 s</option>
+        <option value="60">Après 1 min</option>
+        <option value="300">Après 5 min</option>
+      </select>
+    </label>
+    <label class="champ">Verrouiller si je ne touche à rien
+      <select id="r-inactivite">
+        <option value="60">1 min</option>
+        <option value="300">5 min</option>
+        <option value="900">15 min</option>
+        <option value="0">Jamais</option>
+      </select>
+    </label>
+    <label class="case"><input id="r-vider" type="checkbox"> Vider le presse-papiers après « Coller »</label>
+    <div class="liste">
+      <button type="button" id="r-mdp">Changer le mot de passe</button>
+      <button type="button" id="r-code">Nouveau code de secours</button>
+      <button type="button" id="r-export">Exporter une sauvegarde chiffrée</button>
+      <button type="button" id="r-effacer" class="danger">Supprimer tout le coffre</button>
+    </div>
+    <p class="note" id="r-espace"></p>
+    <div class="actions"><button value="" class="principal">Fermer</button></div>
+  </form>
+</dialog>
+
+<div id="masque"><div class="logo"></div></div>
+<div id="toast" hidden></div>
+<div id="depot" hidden>Dépose pour ranger dans le coffre</div>
+
+<script src="app.js?v=1"></script>
+</body>
+</html>
